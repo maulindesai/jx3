@@ -1,0 +1,78 @@
+# Source: lighthouse/templates/tekton-controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lighthouse-tekton-controller
+  labels:
+    chart: "lighthouse-1.23.4"
+    app: lighthouse-tekton-controller
+    gitops.jenkins-x.io/pipeline: 'namespaces'
+  annotations:
+    meta.helm.sh/release-name: 'lighthouse'
+    meta.helm.sh/release-namespace: 'jx'
+    wave.pusher.com/update-on-config-change: 'true'
+  namespace: jx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lighthouse-tekton-controller
+  template:
+    metadata:
+      labels:
+        app: lighthouse-tekton-controller
+      annotations: {jenkins-x.io/hash: '7530359a3adc1cff671b4363c9ed0e0f9bbf745520b9325cb88cf0647ecdc68d'}
+    spec:
+      serviceAccountName: lighthouse-tekton-controller
+      containers:
+      - name: lighthouse-tekton-controller
+        image: ghcr.io/jenkins-x/lighthouse-tekton-controller:1.23.4
+        imagePullPolicy: IfNotPresent
+        args:
+        - --namespace=jx
+        - --dashboard-url=http://dashboard-jx.jx.alexcare.tech
+        - --dashboard-template=namespaces/{{ .Namespace }}/pipelineruns/{{ .PipelineRun }}
+        - --enable-rerun-status-update=false
+        ports:
+        - name: metrics
+          containerPort: 8080
+        env:
+        - name: "LOGRUS_FORMAT"
+          value: "json"
+        - name: LOGRUS_SERVICE
+          value: "lighthouse"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: LOGRUS_SERVICE_VERSION
+          value: "1.23.4"
+        - name: LOGRUS_STACK_SKIP
+          value: ""
+        - name: DEFAULT_PIPELINE_RUN_SERVICE_ACCOUNT
+          value: "tekton-bot"
+        - name: DEFAULT_PIPELINE_RUN_TIMEOUT
+          value: "2h0m0s"
+        - name: FILE_BROWSER
+          value: "git"
+        - name: JX_DEFAULT_IMAGE
+          value: "ghcr.io/jenkins-x/builder-maven:2.1.149-768"
+        - name: LIGHTHOUSE_DASHBOARD_TEMPLATE
+          value: "namespaces/{{ .Namespace }}/pipelineruns/{{ .PipelineRun }}"
+        - name: LIGHTHOUSE_VERSIONSTREAM_JENKINS_X_JX3_PIPELINE_CATALOG
+          value: "da49e50098f7d5b45b732af2a250b6f6f9fdeec1"
+        envFrom:
+        - secretRef:
+            name: jx-boot-job-env-vars
+            optional: true
+        securityContext: {}
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 80m
+            memory: 128Mi
+      terminationGracePeriodSeconds: 180
+      nodeSelector: {}
+      affinity: {}
+      tolerations: []
+      securityContext: {}

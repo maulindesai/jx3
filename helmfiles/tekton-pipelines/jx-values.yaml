@@ -33,16 +33,20 @@ jxRequirements:
     registry: ghcr.io
   environments:
   - key: dev
+    owner: maulindesai
+    repository: jx3
   - key: staging
   - key: production
   ingress:
-    domain: change.me
+    domain: jx.alexcare.tech
     kind: ingress
     namespaceSubDomain: -tekton-pipelines.
     tls:
       email: ""
       enabled: false
       production: false
+  pipelineUser:
+    username: maulindesai
   repository: bucketrepo
   secretStorage: local
   vault: {}
