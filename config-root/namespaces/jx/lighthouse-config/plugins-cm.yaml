@@ -6,6 +6,10 @@ data:
       repos:
       - maulindesai/jx3
       require_self_approval: true
+    - lgtm_acts_as_approve: true
+      repos:
+      - maulindesai/jxquickstart
+      require_self_approval: true
     cat: {}
     cherry_pick_unapproved: {}
     config_updater:
@@ -21,12 +25,31 @@ data:
         name: cd-indicators
       - endpoint: http://lighthouse-webui-plugin.jx.svc.cluster.local/lighthouse/events
         name: lighthouse-webui-plugin
+      maulindesai/jxquickstart:
+      - endpoint: http://cd-indicators.jx.svc.cluster.local/lighthouse/events
+        name: cd-indicators
+      - endpoint: http://lighthouse-webui-plugin.jx.svc.cluster.local/lighthouse/events
+        name: lighthouse-webui-plugin
     label:
       additional_labels: null
     owners: {}
     plugins:
       maulindesai/jx3:
       - config-updater
+      - approve
+      - assign
+      - help
+      - hold
+      - lgtm
+      - lifecycle
+      - override
+      - size
+      - trigger
+      - wip
+      - cat
+      - dog
+      - pony
+      maulindesai/jxquickstart:
       - approve
       - assign
       - help
@@ -52,6 +75,11 @@ data:
     - repos:
       - maulindesai/jx3
       trusted_org: maulindesai
+    - repos:
+      - maulindesai/jxquickstart
+      trusted_org: maulindesai
+    welcome:
+    - message_template: Welcome
 kind: ConfigMap
 metadata:
   creationTimestamp: null
